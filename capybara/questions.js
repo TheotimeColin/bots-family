@@ -10,7 +10,7 @@ const questions = [
             },
             {
                 reaction: "🔳",
-                title: "Miroir d'infini",
+                title: "Miroir infini",
                 house: 2
             },
             {
@@ -40,22 +40,22 @@ const questions = [
             }
         ]
     }, {
-        title: "Comment voudrais-tu qu'on se souvienne de toi ?",
+        title: "Pour quelle raison voudrais-tu qu'on se souvienne de toi ?",
         value: 2,
         options: [
             {
                 reaction: "✊",
-                title: "Le Courageux",
+                title: "Ta bravoure",
                 house: 1
             },
             {
                 reaction: "✌️",
-                title: "L'Inventeur",
+                title: "Ton inventivité",
                 house: 2
             },
             {
                 reaction: "🤲",
-                title: "Le Généreux",
+                title: "Ta générosité",
                 house: 3
             }
         ]
@@ -144,8 +144,8 @@ const questions = [
         value: 2,
         options: [
             {
-                reaction: "🏕",
-                title: "Une tente",
+                reaction: "🔥",
+                title: "Un briquet de la corde",
                 house: 1
             },
             {
@@ -326,17 +326,17 @@ const questions = [
             {
                 reaction: "🌅",
                 title: "Une marche le long de la plage un soir d'été",
-                house: 2
+                house: 3
             },
             {
                 reaction: "🎡",
                 title: "Un rue marchande illuminée et pleine de vie",
-                house: 3
+                house: 1
             },
             {
                 reaction: "🏯",
                 title: "Un parcours parmi les lieux historiques d'un pays étranger",
-                house: 3
+                house: 2
             }
         ]
     }, {
@@ -409,8 +409,8 @@ const questions = [
         value: 2,
         options: [
             {
-                reaction: "✨",
-                title: "Découvrir de nouveaux lieux et activités",
+                reaction: "👋",
+                title: "Pour rencontrer de belles personnes",
                 house: 1
             },
             {
@@ -419,8 +419,8 @@ const questions = [
                 house: 2
             },
             {
-                reaction: "👋",
-                title: "Pour rencontrer de belles personnes",
+                reaction: "✨",
+                title: "Découvrir de nouveaux lieux et activités",
                 house: 3
             }
         ]
@@ -536,12 +536,12 @@ const questions = [
             {
                 reaction: "🤸‍♂️",
                 title: "Une agilité incroyable",
-                house: 1
+                house: 2
             },
             {
                 reaction: "🧘‍♂️",
                 title: "La lévitation",
-                house: 2
+                house: 1
             },
             {
                 reaction: "🌀",
@@ -566,7 +566,7 @@ const questions = [
             {
                 reaction: "💅",
                 title: "Le vernis à ongle ultra durcissant",
-                house: 1
+                house: 3
             },
             {
                 reaction: "💄",
@@ -574,9 +574,9 @@ const questions = [
                 house: 2
             },
             {
-                reaction: "💍",
-                title: "La bague étourdissante",
-                house: 3
+                reaction: "🌪️",
+                title: "La sèche-cheveux tornade",
+                house: 1
             }
         ]
     }, {

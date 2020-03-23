@@ -49,7 +49,7 @@ class Quizz {
             embed: new Discord.MessageEmbed({
                 color: '#EF476F',
                 title: `Moi, grand Maître Capybara, vais choisir ta Maison...`,
-                description: 'Je perçois déjà vers quelle Maison te diriger... Mais je vais quand même te poser quelques questions pour en être certain.\n\nApaise ton esprit, concentre-toi et réponds avec la plus grande sincérité possible.\n\n**Es-tu prêt ?**',
+                description: 'Je perçois déjà vers quelle Maison te diriger... Mais je vais quand même te poser quelques questions pour en être certain.\n\nApaise ton esprit, concentre-toi et réponds avec la plus grande sincérité possible.\n\n**Es-tu prêt(e) ?**',
                 footer: { text: 'Pour répondre, clique ci-dessous'}
             }),
             main: null,
