@@ -1,3 +1,7 @@
-const Capybara = require('./capybara')
+require("dotenv").config()
 
-const capybaraInstance = new Capybara()
+const Capybara = require('./capybara')
+const Pangolin = require('./pangolin')
+
+const capybaraBot = new Capybara()
+const pangolinBot = new Pangolin()

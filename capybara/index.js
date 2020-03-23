@@ -1,7 +1,6 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
 
-const BOT = require('./bot')
 const CONSTANTS = require('../constants')
 const QUESTIONS = require('./questions')
 
@@ -16,7 +15,7 @@ module.exports = class Capybara {
 
     init () {
         this.$state.client.on("ready", () => console.log(`Logged in as ${this.$state.client.user.tag}!`))
-        this.$state.client.login(BOT.TOKEN)
+        this.$state.client.login(process.env.CAPYBARA_TOKEN)
 
         this.initEvents()
     }
@@ -55,7 +54,7 @@ class Quizz {
             }),
             main: null,
             points: {
-                1: this.$props.test ? 0 : 6,
+                1: this.$props.test ? 0 : 4,
                 2: 0,
                 3: 0
             }

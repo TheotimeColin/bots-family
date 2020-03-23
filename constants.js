@@ -1,5 +1,5 @@
 module.exports = {
-    SERVER_NAME: 'antiswipe',
+    SERVER_NAME: 'test',
     PERMISSION_ROLE: 'Peut choisir une maison',
     SPOTTED_CHANNEL: '🧨-spotted',
     HOUSES: {
