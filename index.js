@@ -4,7 +4,7 @@ const questions = require('./house-select/questions')
 
 const SERVER_NAME = 'antiswipe'
 const PERMISSION_ROLE = 'Peut choisir une maison'
-const SPOTTED_CHANNEL = '💣-tests'
+const SPOTTED_CHANNEL = '🧨-spotted'
 
 const HOUSES = {
     1: ':zap: Fennecs Aventureux',
