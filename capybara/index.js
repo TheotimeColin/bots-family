@@ -46,7 +46,7 @@ class Quizz {
 
         this.$state = {
             started: false,
-            questions: QUESTIONS.sort(() => Math.random() - 0.5).slice(0, 1),
+            questions: QUESTIONS.sort(() => Math.random() - 0.5).slice(0, 10),
             embed: new Discord.MessageEmbed({
                 color: '#EF476F',
                 title: `Moi, grand Maître Capybara, vais choisir ta Maison...`,
@@ -55,7 +55,7 @@ class Quizz {
             }),
             main: null,
             points: {
-                1: this.$props.test ? 0 : 4,
+                1: this.$props.test ? 0 : 6,
                 2: 0,
                 3: 0
             }
