@@ -11,7 +11,7 @@ const HOUSES = {
 }
 
 const VALUES = {
-    1: 'rencontres - aventure - force',
+    1: 'rencontres - aventure - persévérance',
     2: 'pragmatisme - ambition - fidélité',
     3: 'rêve - amour - créativité'
 }
