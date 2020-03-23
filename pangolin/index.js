@@ -3,7 +3,7 @@ const client = new Discord.Client()
 
 const CONSTANTS = require('../constants')
 
-module.exports = class Capybara {
+module.exports = class Pangolin {
     constructor () {
         this.$state = {
             client: client,
@@ -21,8 +21,8 @@ module.exports = class Capybara {
 
     init () {
         console.log(`Logged in as ${this.$state.client.user.tag}!`)
-
-        this.$props.server = this.$state.client.guilds.cache.find(server => server.name === CONSTANTS.SERVER_NAME)
+        
+        this.$props.server = this.$state.client.guilds.cache.find(server => server.name === process.env.SERVER)
         this.$props.spottedChannel = this.$props.server.channels.cache.find(channel => channel.name === CONSTANTS.SPOTTED_CHANNEL)
 
         this.initEvents()

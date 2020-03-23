@@ -10,12 +10,12 @@ module.exports = class Capybara {
             client: client
         }
 
-        this.init()
+        this.$state.client.login(process.env.CAPYBARA_TOKEN)
+        this.$state.client.on('ready', () => this.init())
     }
 
     init () {
-        this.$state.client.on("ready", () => console.log(`Logged in as ${this.$state.client.user.tag}!`))
-        this.$state.client.login(process.env.CAPYBARA_TOKEN)
+        console.log(`Logged in as ${this.$state.client.user.tag}!`)
 
         this.initEvents()
     }
