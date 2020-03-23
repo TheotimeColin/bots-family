@@ -4,7 +4,7 @@ const questions = require('./house-select/questions')
 
 const SERVER_NAME = 'antiswipe'
 const PERMISSION_ROLE = 'Peut choisir une maison'
-const SPOTTED_CHANNEL = '🧨-spotted'
+const SPOTTED_CHANNEL = '💣-tests'
 
 const HOUSES = {
     1: ':zap: Fennecs Aventureux',
@@ -95,7 +95,7 @@ client.on("message", userMessage => {
         userMessage.reply(`Que souhaites-tu partager en anonyme ?\n**Merci de rester bienveillant et de te limiter à 1 message par jour.**`)
 
         client.on('message', (message) => {
-            if (message.author == userMessage.author && start) {
+            if (message.author == userMessage.author && start && message.channel == userMessage.channel) {
                 const spottedMessage = message
                 
                 const newEmbed = new Discord.MessageEmbed({
