@@ -48,8 +48,10 @@ client.on("ready", () => {
 })
 
 client.on("message", userMessage => {
-    if (userMessage.content === "!choix") {
-        if (userMessage.member.roles.cache.some(r => ROLES.includes(r.name))) {
+    if (userMessage.content === "!choix" || userMessage.content === "!test") {
+        const test = userMessage.content === "!test"
+
+        if (userMessage.member.roles.cache.some(r => ROLES.includes(r.name)) && !test) {
             userMessage.reply('Tu as déjà une Maison !')
         } else {
             const userId = userMessage.author.id
@@ -78,7 +80,7 @@ client.on("message", userMessage => {
                 collector.on('collect', (reaction, user) => {
                     if (user.id == userId && !started) {
                         started = true
-                        startQuizz({ embed, points, message, userMessage, userId, selectedQuestions })
+                        startQuizz({ embed, points, message, userMessage, userId, selectedQuestions, test })
                     }
                 })
             }).catch();
@@ -86,7 +88,7 @@ client.on("message", userMessage => {
     }
 })
 
-const startQuizz = async ({ embed, points, message, userMessage, userId, selectedQuestions }) => {
+const startQuizz = async ({ embed, points, message, userMessage, userId, selectedQuestions, test }) => {
     message.reactions.removeAll()
 
     let i = 0
@@ -98,7 +100,7 @@ const startQuizz = async ({ embed, points, message, userMessage, userId, selecte
         points[result.house] += result.points
     }
 
-    giveResult({ embed, points, message, userMessage })
+    giveResult({ embed, points, message, userMessage, test })
 }
 
 const askQuestion = ({ question, embed, message, userId, i, total }) => {
@@ -145,7 +147,7 @@ const askQuestion = ({ question, embed, message, userId, i, total }) => {
     })
 }
 
-const giveResult = ({ embed, points, message, userMessage }) => {
+const giveResult = ({ embed, points, message, userMessage, test }) => {
     let results = []
     let highest = 0
 
@@ -174,14 +176,16 @@ const giveResult = ({ embed, points, message, userMessage }) => {
     
     message.edit(newEmbed)
 
-    const permissionRole = message.guild.roles.cache.find(role => role.name === PERMISSION_ROLE)
-    userMessage.member.roles.remove(permissionRole.id)
+    if (!test) {
+        const permissionRole = message.guild.roles.cache.find(role => role.name === PERMISSION_ROLE)
+        userMessage.member.roles.remove(permissionRole.id)
 
-    const role = message.guild.roles.cache.find(role => role.name === ROLES[finalResult - 1])
-    userMessage.member.roles.add(role.id)
+        const role = message.guild.roles.cache.find(role => role.name === ROLES[finalResult - 1])
+        userMessage.member.roles.add(role.id)
 
-    const channel = client.channels.cache.find(channel => channel.name === ROOMS[finalResult])
-    channel.send(`${role}, je vous demande d'accueillir ${userMessage.author.toString()} qui intègre votre Maison !`)
+        const channel = client.channels.cache.find(channel => channel.name === ROOMS[finalResult])
+        channel.send(`${role}, je vous demande d'accueillir ${userMessage.author.toString()} qui intègre votre Maison !`)
+    }
 }
 
 client.login("NjkxMjU1NjkxMTg4MzcxNTM3.XndUPw.ldK1QEwEbOlg2Ar4EVKRZThOE9A")
