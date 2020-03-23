@@ -59,7 +59,7 @@ client.on("message", userMessage => {
             let started = false
 
             let points = {
-                1: 0,
+                1: test ? 0 : 2,
                 2: 0,
                 3: 0
             }
