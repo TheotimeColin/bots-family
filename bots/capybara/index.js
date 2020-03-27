@@ -54,7 +54,7 @@ class Quizz {
             }),
             main: null,
             points: {
-                1: this.$props.test ? 0 : 4,
+                1: 0,
                 2: 0,
                 3: 0
             }
