@@ -42,6 +42,8 @@ class Quizz {
             member: props.message.member,
             author: props.message.author
         }
+        
+        console.log('rebuild')
 
         this.$state = {
             started: false,
