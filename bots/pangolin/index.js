@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
 
-const CONSTANTS = require('../constants')
+const CONSTANTS = require('../../constants')
 
 module.exports = class Pangolin {
     constructor () {

@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
 
-const CONSTANTS = require('../constants')
+const CONSTANTS = require('../../constants')
 const QUESTIONS = require('./questions')
 
 module.exports = class Capybara {
@@ -69,7 +69,7 @@ class Quizz {
         } else {
             this.$props.message.channel.send(this.$state.embed).then((message) => {
                 this.$state.main = message
-                this.$state.main.react('✅')
+                this.$state.main.react('🆗')
 
                 const collector = this.$state.main.createReactionCollector((v) => v, { time: 150000 })
                 collector.on('collect', (reaction, user) => {
@@ -172,7 +172,7 @@ class Quizz {
 
             const channel = this.$props.parent.$state.client.channels.cache.find(channel => channel.name === CONSTANTS.ROOMS[finalResult])
 
-            channel.send(`${role}, je vous demande d'accueillir ${this.$props.author.toString()} qui intègre votre Maison !`)
+            channel.send(`${CONSTANTS.HOUSES[finalResult]}, je vous demande d'accueillir ${this.$props.author.toString()} qui intègre votre Maison !`)
         }
     }
 }

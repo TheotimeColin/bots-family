@@ -80,7 +80,7 @@ const questions = [
             }
         ]
     }, {
-        title: "Quel mot t'inspire le plus ?",
+        title: "Quelle réponse t'inspire le plus ?",
         value: 2,
         options: [
             {
@@ -100,7 +100,7 @@ const questions = [
             }
         ]
     }, {
-        title: "Quel réponse t'inspire le plus ?",
+        title: "Quelle réponse t'inspire le plus ?",
         value: 2,
         options: [
             {
@@ -145,7 +145,7 @@ const questions = [
         options: [
             {
                 reaction: "🔥",
-                title: "Un briquet de la corde",
+                title: "Un briquet et de la corde",
                 house: 1
             },
             {

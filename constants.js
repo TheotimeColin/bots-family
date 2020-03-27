@@ -1,16 +1,16 @@
 module.exports = {
-    SERVER_NAME: 'test',
-    PERMISSION_ROLE: 'Peut choisir une maison',
-    SPOTTED_CHANNEL: '🧨-spotted',
+    SERVER_NAME: `test`,
+    PERMISSION_ROLE: `Peut choisir une maison`,
+    SPOTTED_CHANNEL: `🧨-spotted`,
     HOUSES: {
-        1: ':zap: Fennecs Aventureux',
-        2: ':rocket: Macareux Cosmiques',
-        3: ':sparkles: Axolotls Scintillants'
+        1: `:zap: Fennecs Aventureux`,
+        2: `:rocket: Macareux Cosmiques`,
+        3: `:sparkles: Axolotls Scintillants`
     },
     VALUES: {
-        1: 'rencontres - aventure - persévérance',
-        2: 'pragmatisme - ambition - fidélité',
-        3: 'rêve - amour - créativité'
+        1: `rencontres - aventure - persévérance`,
+        2: `pragmatisme - ambition - fidélité`,
+        3: `rêve - amour - créativité`
     },
     ROLES: [
         `⚡ Fennecs Aventureux`,
@@ -32,8 +32,8 @@ module.exports = {
         `Tu pourrais appartenir aux trois. Mais celle-ci te convient le mieux.`
     ],
     ROOMS: {
-        1: '⚡-la-tanière-des-fennecs-aventureux',
-        2: '🚀-le-labo-des-macareux-cosmiques',
-        3: '✨-l-atelier-des-axolotls-scintillants'
+        1: `⚡-la-tanière-des-fennecs-aventureux`,
+        2: `🚀-le-labo-des-macareux-cosmiques`,
+        3: `✨-l-atelier-des-axolotls-scintillants`
     }
 }
