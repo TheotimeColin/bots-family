@@ -66,7 +66,7 @@ class Quizz {
             author: props.message.author,
             easyQuestions: 3,
             hardQuestions: 1,
-            admissionPoints: 8
+            admissionPoints: 7
         }
 
         this.$state = {
@@ -169,7 +169,7 @@ class Quizz {
                 thumbnail: question.thumbnail ? question.thumbnail : null
             }, false)
 
-            this.$state.embedManager.editFields({
+            await this.$state.embedManager.editFields({
                 'question': { description: question.title, enabled: true },
                 'answers': { description: options.map(o => o.reaction + '  ' + o.title).join('\n'), enabled: true },
                 'steps': { description: `Cette question vaut **${question.level} ${question.level > 1 ? 'points' : 'point'}**.`, enabled: true }

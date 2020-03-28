@@ -61,6 +61,7 @@ module.exports = class EmbedManager {
             })
         
             await this.update()
+
             resolve(true)
         })
     }
@@ -102,10 +103,10 @@ module.exports = class EmbedManager {
 
     update () {
         if (this.$state.message) {
-            new Promise (async resolve => {
-                await this.$state.message.edit({ embed: this.getEmbed() })
-                
-                resolve(true)
+            new Promise (resolve => {
+                this.$state.message.edit({ embed: this.getEmbed() }).then(() => {
+                    resolve(true)
+                })
             })
         }
     }
