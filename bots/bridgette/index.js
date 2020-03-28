@@ -48,7 +48,7 @@ module.exports = class Bridgette {
 
             if (!this.$state.awaitingResponse) this.$state.quietRounds += 1
 
-            if (this.$state.quietRounds > 25) {
+            if (this.$state.quietRounds > 40) {
                 this.$state.isQuiet = true
                 this.$state.quietRounds = 0
             }
@@ -67,6 +67,16 @@ module.exports = class Bridgette {
             this.$state.awaitingResponse = false
             this.$state.quietRounds = 0
             this.$state.isQuiet = false
+        }
+
+        if (message.channel.id == this.$props.channel.id && message.content === '!question') {
+            this.$state.awaitingResponse = true
+            this.$state.isQuiet = false
+            this.sendMessage()
+        }
+
+        if (message.channel.id == this.$props.channel.id && message.content === '!reset') {
+            this.$state.messages = this.$state.messages.map(m => ({ ...m, done: false }))
         }
     }
 
