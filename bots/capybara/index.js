@@ -43,8 +43,6 @@ class Quizz {
             author: props.message.author
         }
         
-        console.log('rebuild')
-
         this.$state = {
             started: false,
             questions: QUESTIONS.sort(() => Math.random() - 0.5).slice(0, 10),

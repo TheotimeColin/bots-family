@@ -17,6 +17,10 @@ module.exports = class Ellieth {
             eventManager: new EventManager()
         }
 
+        this.$props = {
+            channel: null
+        }
+
         this.$state.client.login(process.env.ELLIETH_TOKEN)
         this.$state.client.on('ready', () => this.init())
     }
@@ -25,6 +29,7 @@ module.exports = class Ellieth {
         console.log(`Logged in as ${this.$state.client.user.tag}!`)
         
         this.$state.server = this.$state.client.guilds.cache.find(server => server.name === process.env.SERVER)
+        this.$props.channel = this.$state.server.channels.cache.find(channel => channel.name === R.TEST_CHANNEL)
 
         this.initEvents()
     }
@@ -39,15 +44,15 @@ module.exports = class Ellieth {
     }
 
     onMessage (message) {
-        if (message.content === "!exam") {
+        if (message.content === "!exam" && message.channel.id === this.$props.channel.id) {
             if (message.member.roles.cache.find((r) => r.name === R.PLAYED_ROLE)) {
-                message.reply(`vous avez déjà passé l'examen d'admission. Pour passer un examen blanc, essayez plutôt !blanc.`)
+                message.reply(`vous avez déjà passé l'examen d'admission.`)
             } else {
                 new Quizz({ message }, this)
             }
         }
 
-        if (message.content === "!blanc") new Quizz({ message, test: true }, this)
+        // if (message.content === "!blanc") new Quizz({ message, test: true }, this)
     }
 }
 
@@ -76,7 +81,7 @@ class Quizz {
                 **${CREATURES.title}**
                 **${DIVINATION.title}**
                 
-                Pour être admis(e), vous devez obtenir au moins **${this.$props.admissionPoints} points**. Les futurs étudiant(e)s remportent **8 amulettes** en bonus.
+                Pour être admis(e), vous devez obtenir au moins **${this.$props.admissionPoints} points**. Les futurs étudiant(e)s remportent **30 amulettes** en bonus.
                 
                 **${this.$props.author.toString()}, êtes-vous prêt(e) ?**`
             }),

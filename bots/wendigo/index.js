@@ -6,17 +6,18 @@ const EmbedManager = require('../../helpers/EmbedManager')
 
 const R = require('./ressources')
 
-module.exports = class Norns {
+module.exports = class Wendigo {
     constructor () {
         this.$state = {
             client: client,
         }
 
         this.$props = {
-            server: null
+            server: null,
+            channel: null
         }
 
-        this.$state.client.login(process.env.NORNS_TOKEN)
+        this.$state.client.login(process.env.WENDIGO_TOKEN)
         this.$state.client.on('ready', () => this.init())
     }
 
@@ -24,14 +25,19 @@ module.exports = class Norns {
         console.log(`Logged in as ${this.$state.client.user.tag}!`)
         
         this.$props.server = this.$state.client.guilds.cache.find(server => server.name === process.env.SERVER)
+        this.$props.channel = this.$props.server.channels.cache.find(channel => channel.name === R.CHANNEL)
 
         this.initEvents()
     }
 
     initEvents () {
         this.$state.client.on("message", message => {
-            if (message.content === "!play") {
-                new Game({ message }, this)
+            if (message.content === "!entrer" && message.channel.id === this.$props.channel.id) {
+                if (message.member.roles.cache.find((r) => r.name === R.PLAYED_ROLE)) {
+                    message.reply(`tu as déjà tenté ta chance dans l'antre du Wendigo.`)
+                } else {
+                    new Game({ message }, this)
+                }
             }
         })
     }
@@ -51,9 +57,9 @@ class Game {
             main: null,
             embedManager: new EmbedManager({
                 color: 0x0099ff,
-                title: `þriár, ór þeim sal er und þolli stendr; Urð héto eina, aðra Verðandi, Sculd ena þriðio;`,
-                description: `Trois, venant de la mer,\nqui s'étend sous l'arbre ;\nL'une est appelée Urd,\nVerdandi, l'autre\nLa troisième est Skuld.`,
-                thumbnail: 'https://i.imgur.com/FMWtqte.png'
+                title: `Tu pénétres dans l'antre du Wendigo...`,
+                description: `Le Wendigo est associé aux péchés de cupidité. Il n'est jamais satisfait et se met constamment à la recherche de nouvelles victimes. Quiconque est dominé par la cupidité pourrait se transformer en Wendigo.`,
+                thumbnail: 'https://i.imgur.com/tehYupC.png'
             })
         }
 
@@ -61,18 +67,15 @@ class Game {
     }
 
     init () {
+        const role = this.$props.message.guild.roles.cache.find(role => role.name === R.PLAYED_ROLE)
+        this.$props.member.roles.add(role.id)
+
         this.$state.embedManager.addFields({
-            'urd' : {
-                title: `Urd :`,
-                description: `🗡 Le passé est gravé sur le bois mais les Hommes oublient vite. Est-ce ton cas ?`
+            'intro': {
+                description: `Tu as la possibilité de récupérer les nombreux trésors laissés par les victimes du Wendigo.`
             },
-            'verdandi': {
-                title: `Verdandi :`,
-                description: `⏳ Le temps file entre tes doigts comme une poignée de sable fin, est-il déjà trop tard ?`
-            },
-            'skuld': {
-                title: `Skuld :`,
-                description: `🔮 Fais-tu confiance aux fils qui te relient à ton destin ?`
+            'goal': {
+                description: `**${this.$props.author.toString()}, sauras-tu t'arrêter à temps ?**`
             }
         })
 
@@ -83,9 +86,7 @@ class Game {
         const message = await this.$state.embedManager.sendTo(this.$props.message.channel)
 
         this.$state.main = message
-        this.$state.main.react('🗡')
-        this.$state.main.react('⏳')
-        this.$state.main.react('🔮')
+        this.$state.main.react('💀')
 
         this.$state.eventManager.addListener({
             id: 'start-game',
@@ -130,23 +131,20 @@ class SkuldGame {
 
     init () {
         this.$state.embedManager.editInfo({
-            title: `L'épreuve de Skuld, la divination.`,
             description: `${this.$props.author.toString()}, fais-tu confiance en ton instinct ?`,
             thumbnail: null
         })
 
-        this.$state.embedManager.toggleFields(['urd', 'verdandi', 'skuld'], false)
+        this.$state.embedManager.toggleFields(['intro', 'goal'], false)
 
         this.$state.embedManager.addFields({
-            'skuld-intro': {
-                title: `þær lög lögðo, þær líf kuro alda börnom, ørlög seggia.`,
-                description: `Dans ${this.$state.urnNumber - 1} de ces urnes se trouve la prospérité que tu recherches. Dans l'une, se trouve la mort. Je t'offre ${this.$state.pointsToEarn} amulette si passes cette épreuve.`
+            'wendigo-intro': {
+                title: `Plusieurs chemins s'offrent à toi. ${this.$state.urnNumber - 1} d'entre eux mènent à un trésor. L'autre te mène vers le Wendigo. Tu gagnes ${this.$state.pointsToEarn} amulettes si tu fais le bon choix.`
             },
-            'skuld-selector': { enabled: false },
-            'skuld-urns': { enabled: false },
-            'skuld-result': {
+            'wendigo-urns': { enabled: false },
+            'wendigo-result': {
                 enabled: true,
-                description: `Nombre d'amulettes accumulées dans l'antre de Skuld : ${this.$state.points}`
+                description: `Nombre d'amulettes accumulées : ${this.$state.points}`
             }
         })
 
@@ -157,14 +155,16 @@ class SkuldGame {
         this.$state.pointsToEarn = R.points[this.$state.roundNumber]
 
         if (this.$state.urnNumber == 2) {
-            this.$state.embedManager.editField('skuld-intro', {
-                title: `þær lög lögðo, þær líf kuro alda börnom, ørlög seggia.`,
-                description: `Crois-tu réellement à ton destin ou bien n'était-ce qu'un coup de chance ? Prouve-le, maintenant. Je double ta mise et t'offre ${this.$state.pointsToEarn} amulettes supplémentaires si tu passe cette dernière épreuve.`
+            this.$state.embedManager.editField('wendigo-intro', {
+                title: `Tu arrives au fin fond de la caverne, il n'y a plus que deux chemin. L'un d'eux te mènera vers le Wendigo, l'autre vers un trésor encore plus grand que les précédents !`,
+                description: `Tu gagnes ${this.$state.pointsToEarn} amulettes si tu choisis le bon chemin, mais tu peux aussi repartir avec les ${this.$state.points} amulettes que tu as déjà trouvé !
+`
             })
         } else if (this.$state.roundNumber > 0) {
-            this.$state.embedManager.editField('skuld-intro', {
-                title: `þær lög lögðo, þær líf kuro alda börnom, ørlög seggia.`,
-                description: `Tu ne penses quand même pas qu'on allait s'arrêter en si bon chemin ?\nTon choix se réduit mais je t'offre ${this.$state.pointsToEarn} amulettes si tu réussis. Si tu échoues, tu perds tout ce que tu as accumulé ici.\n\nTu peux aussi tout arrêter et repartir avec tes gains.`
+            this.$state.embedManager.editField('wendigo-intro', {
+                title: `Tu t'enfonces un peu plus dans la caverne et tu arrives à un autre croisement. Choisiras-tu de continuer ton aventure ?`,
+                description: `Tu gagnes ${this.$state.pointsToEarn} amulettes si tu choisis le bon chemin, mais tu peux aussi repartir avec les ${this.$state.points} amulettes que tu as déjà trouvé !
+`
             })
         }
 
@@ -206,14 +206,10 @@ class SkuldGame {
         this.$state.urns[Math.floor(Math.random() * this.$state.urns.length)].value = 0
 
         this.$state.embedManager.editFields({
-            'skuld-selector': {
+            'wendigo-urns': {
                 enabled: true,
-                description: this.$state.urns.map(v => R.numbers[v.id]).join(' ')
-            },
-            'skuld-urns': {
-                enabled: true,
-                title: this.$state.urns.map(v => (this.$state.urnNumber == 2 ? '🏺' : '⚱️')).join(' '),
-                description: this.$state.urns.map(v => '➖').join(' ')
+                title: this.$state.urns.map(v => '🚪').join(' '),
+                description: this.$state.urns.map(v => '➖').join(' ') + '➖🚶‍♀️'
             }
         })
 
@@ -229,6 +225,9 @@ class SkuldGame {
         if (this.$props.member.id === user.id && reaction.emoji.name !== '🛑') {
             this.$state.eventManager.removeListener('make-selection')
             this.$props.main.reactions.removeAll()
+            this.$state.embedManager.editFields({
+                'wendigo-player': { enabled: false }
+            })
 
             let selected = null
             R.numbers.forEach((number, i) => {
@@ -250,7 +249,7 @@ class SkuldGame {
         let position = 0
         let skulls = 1
         
-        setInterval(() => {
+        setInterval(async () => {
             if (position < this.$state.urns.length) {
                 let toReveal = null
                 let notRevealed = this.$state.urns.filter(c => !c.revealed)
@@ -271,15 +270,11 @@ class SkuldGame {
                     if (urn.id == toReveal) urn.revealed = true
                 })
 
-                this.$state.embedManager.editFields({
-                    'skuld-selector': {
+                await this.$state.embedManager.editFields({
+                    'wendigo-urns': {
                         enabled: true,
-                        description: this.$state.urns.map(v => v.selected ? '🔻' : '➖').join(' ')
-                    },
-                    'skuld-urns': {
-                        enabled: true,
-                        title: this.$state.urns.map(v => v.revealed ? '💥' : (this.$state.urnNumber == 2 ? '🏺' : '⚱️')).join(' '),
-                        description: this.$state.urns.map(v => v.revealed ? (v.value ? '💎' : '💀') : '➖').join(' ')
+                        title: this.$state.urns.map(v => v.revealed ? (v.value ? '📿' : '💀') : '🚪').join(' '),
+                        description: this.$state.urns.map(v => v.selected ? '🚶‍♀️' : '➖').join(' ')
                     }
                 })
 
@@ -295,26 +290,25 @@ class SkuldGame {
             this.$state.points += this.$state.pointsToEarn
 
             this.$state.embedManager.editFields({
-                'skuld-intro': {
-                    title: `On dirait que le destin te sourit.`,
-                    description: `Comme promis, voici tes ${this.$state.pointsToEarn} précieuses amulettes.`
+                'wendigo-intro': {
+                    title: `Tu arrives dans une cavité de la grotte. Le sol est jonché de squelettes. L’un d’eux est appuyé sur un coffre. Tu l’ouvres et récupère ${this.$state.pointsToEarn} précieuses amulettes de plus !`, description: false
                 },
-                'skuld-result': {
+                'wendigo-result': {
                     enabled: true,
-                    description: `Nombre d'amulettes accumulées dans l'antre de Skuld : ${this.$state.points}`
+                    description: `Nombre d'amulettes accumulées : ${this.$state.points}`
                 }
             })
         } else {
             this.$state.points = 0
 
             this.$state.embedManager.editFields({
-                'skuld-intro': {
-                    title: `Ta destinée te fait défaut.`,
-                    description: `Tu repars d'ici les mains vides.`
+                'wendigo-intro': {
+                    title: `Tu arrives dans une cavité de la grotte. Le sol est jonché de squelettes. L’un d’eux est appuyé sur un coffre. Tu l’ouvres et récupère 500 amulettes ! Mais tu as à peine le temps de te retourner, que le Wendigo t’as déjà dévoré !`,
+                    description: false
                 },
-                'skuld-result': {
+                'wendigo-result': {
                     enabled: true,
-                    description: `Nombre d'amulettes accumulées dans l'antre de Skuld : ${this.$state.points}`
+                    description: `Nombre d'amulettes accumulées : ${this.$state.points}`
                 }
             })
         }
@@ -337,19 +331,22 @@ class SkuldGame {
     endScreen () {
         this.$props.main.reactions.removeAll()
         
-        this.$state.embedManager.toggleFields(['skuld-intro', 'skuld-selector', 'skuld-urns', 'skuld-result'], false)
+        this.$state.embedManager.toggleFields(['wendigo-intro', 'wendigo-urns', 'wendigo-result'], false)
 
         if (this.$state.urnNumber == 1) {
             this.$state.embedManager.editInfo({
-                description: `Impressionnant, ${this.$props.author.toString()}. Tu as tenté le tout pour le tout et tu repars avec ${this.$state.points} amulettes.`
+                title: `Quelle témérité !`,
+                description: `Impressionnant, ${this.$props.author.toString()}. Tu as exploré la caverne, sans croiser le Wendigo une seule fois, et tu repars avec ${this.$state.points} amulettes !`
             })
         } else if (this.$state.points > 0) {
             this.$state.embedManager.editInfo({
-                description: `${this.$props.author.toString()}, tu repars de l'antre de Skuld avec ${this.$state.points} amulette(s). Peut-être pourras-tu en remporter plus auprès des autres Nornes ?`
+                title: `Quelle sagesse.`,
+                description: `${this.$props.author.toString()}, malgré ton courage infaillible, rebrousser chemin me semble avoir été la bonne décision. Tu repars de la caverne avec ${this.$state.points} amulettes.`
             })
         } else {
             this.$state.embedManager.editInfo({
-                description: `${this.$props.author.toString()}, tu repars de l'antre de Skuld les mains vides. Mais tu auras peut-être plus de chance avec les autres Nornes.`
+                title: `Petit ange parti trop tôt.`,
+                description: `${this.$props.author.toString()}, tu as été dévoré par le Wendigo. Tes restes reposent parmi les autres aventuriers imprudents. Les amulettes que tu avais récupérées jonchent désormais le sol de la caverne. Dommage !`
             })
         }
     }

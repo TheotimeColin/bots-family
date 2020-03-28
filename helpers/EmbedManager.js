@@ -52,14 +52,17 @@ module.exports = class EmbedManager {
     }
 
     editFields (params) {
-        Object.keys(params).forEach(key => {
-            this.$state.fields[key] = {
-                ...this.$state.fields[key],
-                ...params[key]
-            }
-        })
+        new Promise (async resolve => {
+            Object.keys(params).forEach(key => {
+                this.$state.fields[key] = {
+                    ...this.$state.fields[key],
+                    ...params[key]
+                }
+            })
         
-        this.update()
+            await this.update()
+            resolve(true)
+        })
     }
 
     toggleFields (ids, action) {
@@ -98,6 +101,12 @@ module.exports = class EmbedManager {
     }
 
     update () {
-        if (this.$state.message) this.$state.message.edit({ embed: this.getEmbed() })
+        if (this.$state.message) {
+            new Promise (async resolve => {
+                await this.$state.message.edit({ embed: this.getEmbed() })
+                
+                resolve(true)
+            })
+        }
     }
 }
