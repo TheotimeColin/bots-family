@@ -56,7 +56,7 @@ class Quizz {
             points: {
                 1: 0,
                 2: 0,
-                3: 8
+                3: 5
             }
         }
 
