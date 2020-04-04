@@ -16,6 +16,8 @@
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "^4.0.1",
     "fs": "0.0.1-security",
+    "mongodb": "^3.5.5",
+    "mongoose": "^5.9.7",
     "node-opus": "^0.3.3",
     "ytdl-core": "^2.0.1",
     "ytsr": "^0.1.12"
@@ -24,6 +26,8 @@
     "nodemon": "^2.0.2"
   },
   "nodemonConfig": {
-    "ignore": ["db"]
+    "ignore": [
+      "db"
+    ]
   }
 }

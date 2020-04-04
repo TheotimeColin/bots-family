@@ -18,7 +18,7 @@ module.exports = class List {
                     ▶️ ${this.$parent.$state.playing.title}\n
 
                     **À venir :**
-                ${this.$parent.$state.queue.map((song, i) => `⏩ ${i + 1}. ${song.title}`).join('\n')}
+                ${this.$parent.$state.queue.slice(0, 15).map((song, i) => `⏩ ${i + 1}. ${song.title}`).join('\n')}
                 `
             })
         } else {

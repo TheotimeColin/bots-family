@@ -1,5 +1,5 @@
 const R = require('./resources')
-const LIBRARY = require('./../../db/songs.json')
+const Song = require('../../entities/Song')
 
 const ytdl = require('ytdl-core')
 const fs = require('fs')
@@ -26,13 +26,11 @@ module.exports = class Bard {
         }
 
         this.$state = {
-            library: LIBRARY,
+            library: [],
             queue: [],
             playing: null,
             isPlaying: false
         }
-
-        console.log(this.$state.library)
 
         this.$props.client.login(process.env.BARD_TOKEN)
         this.$props.client.on('ready', () => this.init())
@@ -68,15 +66,7 @@ module.exports = class Bard {
 
             if (this.$props.connection) {
                 if (message.content.includes('!add')) {
-                    let song = await this.$props.addAction.addSong(message)
-                    if (song) {
-                        this.$state.library.songs.push(song)
-                        this.$state.queue.push(song)
-
-                        fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
-                        
-                        if (!this.$state.isPlaying) this.play(true)
-                    }
+                    this.add(message)
                 }
 
                 if (message.content == '!list') {
@@ -84,6 +74,8 @@ module.exports = class Bard {
                 }
 
                 if (message.content == '!next') this.play()
+
+                if (message.content == '!shuffle') this.shuffle()
             
                 if (message.content.includes('!remove')) this.remove(message)
 
@@ -92,18 +84,30 @@ module.exports = class Bard {
         }
     }
 
+    async add (message) {
+        let song = await this.$props.addAction.addSong(message)
+        if (song) {
+            await Song.create(song)
+            
+            let position = Math.round(Math.min(Math.random() * this.$state.queue.length) + 2)
+            this.$state.queue.splice(Math.min(position, 5), 0, song)
+            
+            if (!this.$state.isPlaying) this.play(true)
+        }
+    }
+
     async connect () {
         const connection = await this.$props.audioChannel.join()
         this.$props.connection = connection
 
-        if (this.$state.library.songs.length > 0) this.play()
+        this.play()
     }
 
-    remove (message) {
-        let search = message.content.replace('!remove ', '').toLowerCase()
-        let results = this.$state.library.songs.filter(song => song.title.toLowerCase().includes(search))
-
-        if (results.length <= 0) {
+    async remove (message) {
+        let search = message.content.replace('!remove ', '')
+        let result = await Song.findOneAndDelete({ "title" : { $regex: search, $options: 'i' } })
+        
+        if (!result) {
             const embedManager = new EmbedManager({
                 title: `Je n'ai pas trouvé la chanson à supprimer.`
             })
@@ -112,37 +116,40 @@ module.exports = class Bard {
         } else {
             const embedManager = new EmbedManager({
                 title: `Chanson supprimée.`,
-                description: `${results[0].title}`
+                description: `${result.title}`
             })
 
             embedManager.sendTo(this.$props.textChannel)
 
             this.$state.queue = this.$state.queue.filter(song => !song.title.toLowerCase().includes(search))
-            this.$state.library.songs = this.$state.library.songs.filter(song => !song.title.toLowerCase().includes(search))
-
-            if (this.$state.playing == results[0]) this.play()
-
-            fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
+            
+            console.log(this.$state.playing.title, result.title)
+            if (this.$state.playing.title === result.title) this.play()
         }
     }
 
-    play (add = false) {
+    async play (add = false) {
         this.$state.isPlaying = true
 
-        if (this.$state.queue.length <= 0) this.$state.queue = this.$state.library.songs.slice().sort(() => .5 - Math.random())
+        if (this.$state.queue.length <= 0) {
+            this.$state.library = await Song.find()
+            this.$state.queue = this.$state.library.slice().sort(() => .5 - Math.random())
+        }
 
         this.$state.playing = this.$state.queue[0]
+        this.$state.queue.push(this.$state.playing)
         this.$state.queue.shift()
 
-        this.$props.dispatcher = this.$props.connection.play(ytdl(this.$state.playing.url, { filter: "audioonly" }))
+        if (this.$state.playing) {
+            this.$props.dispatcher = this.$props.connection.play(ytdl(this.$state.playing.url, { filter: "audioonly" }))
 
-        if (!add) this.onPlay()
+            if (!add) this.onPlay()
 
-        this.$props.dispatcher.on("finish", () => this.play())
+            this.$props.dispatcher.on("finish", () => this.play())
+        }
     }
 
     onPlay () {
-        console.log(this.$state.playing)
         if (!this.$state.playing) return
 
         const embedManager = new EmbedManager({
@@ -161,12 +168,15 @@ module.exports = class Bard {
         embedManager.sendTo(this.$props.textChannel)
     }
 
-    reset () {
+    shuffle () {
         this.$state.isPlaying = false
-        this.$state.library.songs = []
         this.$state.queue = []
         this.$state.playing = null
+        
+        this.play()
+    }
 
-        fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
+    reset () {
+
     }
 }
