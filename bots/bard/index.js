@@ -45,8 +45,7 @@ module.exports = class Bard {
         this.$props.audioChannel = this.$props.server.channels.cache.find(channel => channel.name === R.AUDIO_CHANNEL)
         this.$props.textChannel = this.$props.server.channels.cache.find(channel => channel.name === R.TEXT_CHANNEL)
 
-        const connection = await this.$props.audioChannel.join()
-        this.$props.connection = connection
+        this.connect()
 
         if (this.$state.library.songs.length > 0) this.play()
 
@@ -64,26 +63,38 @@ module.exports = class Bard {
 
     async onMessage (message) {
         if (message.channel.id === this.$props.textChannel.id) {
-            if (message.content.includes('!add')) {
-                let song = await this.$props.addAction.addSong(message)
-                if (song) {
-                    this.$state.library.songs.push(song)
-                    this.$state.queue.push(song)
 
-                    fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
-                    
-                    if (!this.$state.isPlaying) this.play(true)
+            if (message.content == '!connect') {
+                this.connect()
+            }
+
+            if (this.$props.connection) {
+                if (message.content.includes('!add')) {
+                    let song = await this.$props.addAction.addSong(message)
+                    if (song) {
+                        this.$state.library.songs.push(song)
+                        this.$state.queue.push(song)
+
+                        fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
+                        
+                        if (!this.$state.isPlaying) this.play(true)
+                    }
                 }
-            }
 
-            if (message.content.includes('!list')) {
-                this.$props.listAction.list(message.channel)
-            }
+                if (message.content == '!list') {
+                    this.$props.listAction.list(message.channel)
+                }
 
-            if (message.content.includes('!next')) this.play()
-        
-            if (message.content.includes('!reset') && message.author.id === process.env.ADMIN_ID) this.reset()
+                if (message.content == '!next') this.play()
+            
+                if (message.content == '!reset' && message.author.id === process.env.ADMIN_ID) this.reset()
+            }
         }
+    }
+
+    connect () {
+        const connection = await this.$props.audioChannel.join()
+        this.$props.connection = connection
     }
 
     play (add = false) {
