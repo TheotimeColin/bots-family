@@ -79,6 +79,8 @@ module.exports = class Bard {
             
                 if (message.content.includes('!remove')) this.remove(message)
 
+                if (message.content == '!reload') this.reload()
+
                 if (message.content == '!reset' && message.author.id === process.env.ADMIN_ID) this.reset()
             }
         }
@@ -149,6 +151,16 @@ module.exports = class Bard {
         }
     }
 
+    reload () {
+        if (this.$state.playing) {
+            this.$props.dispatcher = this.$props.connection.play(ytdl(this.$state.playing.url, { filter: "audioonly" }))
+
+            this.onPlay()
+
+            this.$props.dispatcher.on("finish", () => this.play())
+        }
+    }
+
     onPlay () {
         if (!this.$state.playing) return
 
@@ -165,7 +177,8 @@ module.exports = class Bard {
             description: `Ajouté par ${this.$state.playing.author}`
         })
 
-        embedManager.sendTo(this.$props.textChannel)
+        // embedManager.sendTo(this.$props.textChannel)
+        client.user.setActivity(this.$state.playing.title, { type: 'LISTENING' })
     }
 
     shuffle () {
