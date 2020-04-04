@@ -10,13 +10,22 @@ module.exports = class List {
     list (channel) {
         const embedManager = new EmbedManager({
             title: `Now playing`,
-            description: `
-                ▶️ ${this.$parent.$state.playing.title}\n
-
-                **À venir :**
-            ${this.$parent.$state.queue.map((song, i) => `⏩ ${i + 1}. ${song.title}`).join('\n')}
-            `
         })
+
+        if (this.$parent.$state.playing) {
+            embedManager.editInfo({
+                description: `
+                    ▶️ ${this.$parent.$state.playing.title}\n
+
+                    **À venir :**
+                ${this.$parent.$state.queue.map((song, i) => `⏩ ${i + 1}. ${song.title}`).join('\n')}
+                `
+            })
+        } else {
+            embedManager.editInfo({
+                description: `Pas de chanson en cours.`
+            })
+        }
 
         embedManager.sendTo(channel)
     }

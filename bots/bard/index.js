@@ -63,23 +63,27 @@ module.exports = class Bard {
     } 
 
     async onMessage (message) {
-        if (message.content.includes('!add')) {
-            let song = await this.$props.addAction.addSong(message)
-            if (song) {
-                this.$state.library.songs.push(song)
-                this.$state.queue.push(song)
+        if (message.channel.id === this.$props.textChannel.id) {
+            if (message.content.includes('!add')) {
+                let song = await this.$props.addAction.addSong(message)
+                if (song) {
+                    this.$state.library.songs.push(song)
+                    this.$state.queue.push(song)
 
-                fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
-                
-                if (!this.$state.isPlaying) this.play(true)
+                    fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
+                    
+                    if (!this.$state.isPlaying) this.play(true)
+                }
             }
-        }
 
-        if (message.content.includes('!list')) {
-            this.$props.listAction.list(message.channel)
-        }
+            if (message.content.includes('!list')) {
+                this.$props.listAction.list(message.channel)
+            }
 
-        if (message.content.includes('!next')) this.play()
+            if (message.content.includes('!next')) this.play()
+        
+            if (message.content.includes('!reset') && message.author.id === process.env.ADMIN_ID) this.reset()
+        }
     }
 
     play (add = false) {
@@ -98,6 +102,7 @@ module.exports = class Bard {
     }
 
     onPlay () {
+        console.log(this.$state.playing)
         if (!this.$state.playing) return
 
         const embedManager = new EmbedManager({
@@ -114,5 +119,14 @@ module.exports = class Bard {
         })
 
         embedManager.sendTo(this.$props.textChannel)
+    }
+
+    reset () {
+        this.$state.isPlaying = false
+        this.$state.library.songs = []
+        this.$state.queue = []
+        this.$state.playing = null
+
+        fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
     }
 }

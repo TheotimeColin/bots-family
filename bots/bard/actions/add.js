@@ -21,8 +21,10 @@ module.exports = class List {
                     title: songInfo.title,
                     url: songInfo.video_url,
                     thumbnail: songInfo.player_response.videoDetails.thumbnail.thumbnails[0].url,
-                    author: message.author.id
+                    author: message.author.username
                 }
+
+                console.log(message.author)
 
                 this.onAddSong(message, song)
 

@@ -1,3 +1,16 @@
 {
-  "songs": []
+  "songs": [
+    {
+      "title": "Lady Gaga - Stupid Love (Official Music Video)",
+      "url": "https://www.youtube.com/watch?v=5L6xyaeiV58",
+      "thumbnail": "https://i.ytimg.com/vi/5L6xyaeiV58/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLBmx_g5qCWPBMrFPW1WbUWB8Dpl1A",
+      "author": "Nerloggz"
+    },
+    {
+      "title": "Stellaris Soundtrack - Main Theme",
+      "url": "https://www.youtube.com/watch?v=ttRc6zvVInU",
+      "thumbnail": "https://i.ytimg.com/vi/ttRc6zvVInU/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLAuZj2AvvZua-gNGqcjOZoWkLr3DQ",
+      "author": "Nerloggz"
+    }
+  ]
 }
