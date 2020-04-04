@@ -45,7 +45,7 @@ module.exports = class Bard {
         this.$props.audioChannel = this.$props.server.channels.cache.find(channel => channel.name === R.AUDIO_CHANNEL)
         this.$props.textChannel = this.$props.server.channels.cache.find(channel => channel.name === R.TEXT_CHANNEL)
 
-        // this.connect()
+        this.connect()
 
         this.initEvents()
     }
@@ -85,6 +85,8 @@ module.exports = class Bard {
 
                 if (message.content == '!next') this.play()
             
+                if (message.content.includes('!remove')) this.remove(message)
+
                 if (message.content == '!reset' && message.author.id === process.env.ADMIN_ID) this.reset()
             }
         }
@@ -95,6 +97,33 @@ module.exports = class Bard {
         this.$props.connection = connection
 
         if (this.$state.library.songs.length > 0) this.play()
+    }
+
+    remove (message) {
+        let search = message.content.replace('!remove ', '').toLowerCase()
+        let results = this.$state.library.songs.filter(song => song.title.toLowerCase().includes(search))
+
+        if (results.length <= 0) {
+            const embedManager = new EmbedManager({
+                title: `Je n'ai pas trouvé la chanson à supprimer.`
+            })
+
+            embedManager.sendTo(this.$props.textChannel)
+        } else {
+            const embedManager = new EmbedManager({
+                title: `Chanson supprimée.`,
+                description: `${results[0].title}`
+            })
+
+            embedManager.sendTo(this.$props.textChannel)
+
+            this.$state.queue = this.$state.queue.filter(song => !song.title.toLowerCase().includes(search))
+            this.$state.library.songs = this.$state.library.songs.filter(song => !song.title.toLowerCase().includes(search))
+
+            if (this.$state.playing == results[0]) this.play()
+
+            fs.writeFileSync('./db/songs.json', JSON.stringify(this.$state.library, null, 2))
+        }
     }
 
     play (add = false) {
