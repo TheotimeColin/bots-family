@@ -45,9 +45,7 @@ module.exports = class Bard {
         this.$props.audioChannel = this.$props.server.channels.cache.find(channel => channel.name === R.AUDIO_CHANNEL)
         this.$props.textChannel = this.$props.server.channels.cache.find(channel => channel.name === R.TEXT_CHANNEL)
 
-        this.connect()
-
-        if (this.$state.library.songs.length > 0) this.play()
+        // this.connect()
 
         this.initEvents()
     }
@@ -92,9 +90,11 @@ module.exports = class Bard {
         }
     }
 
-    connect () {
+    async connect () {
         const connection = await this.$props.audioChannel.join()
         this.$props.connection = connection
+
+        if (this.$state.library.songs.length > 0) this.play()
     }
 
     play (add = false) {
