@@ -56,95 +56,108 @@ module.exports = class Quokka {
         })
 
         setInterval(async () => {
-            this.$state.projects.forEach(project => {
-                this.getReport(project.name)
+            this.$state.projects.forEach(async p => {
+                let project = await Project.findOne({ name: p.name })
+
+                var diff = moment().diff(moment(project.lastModifications), 'seconds')
+
+                if (diff > 50) {
+                    await this.getReport(project)
+
+                    await Project.updateOne({ _id: project._id }, {
+                        lastModifications: new Date()
+                    })
+                }
             })
-        }, 3600000)
+        }, 1800000)
     }
 
-    onMessage (message) {
+    async onMessage (message) {
         if (message.content == '!project') this.displayInfo(message)
-        if (message.content == '!project-create')this.createProject(message)
-        if (message.content == '!project-report') this.getReport(message.channel.name, true)
+        if (message.content == '!project-create') this.createProject(message)
+        if (message.content == '!project-report') {
+            let project = await Project.findOne({ name: message.channel.name })
+            this.getReport(project, true)
+        }
     }
 
-    async getReport (name, force = false) {
-        const project = await Project.findOne({ name: name })
-        if (!project) return
+    getReport (project, force = false) {
+        console.log('Getting report')
+        return new Promise(async resolve => {
+            const channel = this.$props.server.channels.cache.find(c => c.id == project.channelId)
+            const embed = new EmbedManager({
+                title: `✌️ Rapport d'activité`
+            })
 
-        const channel = this.$props.server.channels.cache.find(c => c.id == project.channelId)
-        const embed = new EmbedManager({
-            title: `Rapport d'activité`
-        })
+            const results = await this.$props.drive.files.list({
+                q: `'${project.folderId}' in parents`
+            })
 
-        const results = await this.$props.drive.files.list({
-            q: `'${project.folderId}' in parents`
-        })
-
-        if (results.data.files.length > 0) {
-            let activities = await Promise.all(results.data.files.map(result => {
-                return new Promise(async resolve => {
-                    let activities = []
-    
-                    const file = await this.$props.drive.files.get({
-                        fileId: result.id,
-                        fields: 'name, webViewLink'
-                    })
-                
-                    const activitiesResults = await this.$props.driveActivity.activity.query({
-                        itemName: `items/${result.id}`,
-                        filter: force ? `` : `time > "${moment(project.lastModifications).format()}"`,
-                        pageSize: 5
-                    })
-    
-                    const getTimeInfo = function (activity) {
-                        if ('timestamp' in activity) return new Date(activity.timestamp)
-                        if ('timeRange' in activity) return new Date(activity.timeRange.endTime)
-                        return 'unknown'
-                    }
-                    
-                    if (activitiesResults.data.activities) {
-                        activitiesResults.data.activities.forEach(activity => {
-                            let action = activity.primaryActionDetail
-    
-                            if (action.edit || action.create || action.delete) {
-                                let type = null
-    
-                                if (action.edit) type = '🔧 Modification'
-                                if (action.create) type = '💡 Création'
-                                if (action.delete) type = '❌ Suppression'
-    
-                                activities.push({
-                                    type: type,
-                                    name: file.data.name,
-                                    link: file.data.webViewLink,
-                                    time: getTimeInfo(activity)
-                                })
-                            }
+            if (results.data.files && results.data.files.length > 0) {
+                let activities = await Promise.all(results.data.files.map(result => {
+                    return new Promise(async resolve => {
+                        let activities = []
+        
+                        const file = await this.$props.drive.files.get({
+                            fileId: result.id,
+                            fields: 'name, webViewLink'
                         })
-                    }
-    
-                    resolve(activities)
-                })
-            }))
-    
-            activities = [].concat.apply([], activities).sort((a, b) => new Date(b.date) - new Date(a.date))
-    
-            if (activities.length > 0) {
-                activities.forEach((activity, i) => {
-                    embed.addField(activity.name + i, {
-                        title: `${moment(activity.time).format('h:mm (Do MMMM YYYY)')}`,
-                        description: `${activity.type} du fichier [${activity.name}](${activity.link}).`
+                    
+                        const activitiesResults = await this.$props.driveActivity.activity.query({
+                            itemName: `items/${result.id}`,
+                            filter: force ? `` : `time > "${moment(project.lastModifications).format()}"`,
+                            pageSize: 3
+                        })
+
+                        const getTimeInfo = function (activity) {
+                            if ('timestamp' in activity) return new Date(activity.timestamp)
+                            if ('timeRange' in activity) return new Date(activity.timeRange.endTime)
+                            return 'unknown'
+                        }
+                        
+                        if (activitiesResults.data.activities) {
+                            activitiesResults.data.activities.forEach(activity => {
+                                let action = activity.primaryActionDetail
+        
+                                if (action.edit || action.create || action.delete) {
+                                    let type = null
+        
+                                    if (action.edit) type = '🔧 Modification'
+                                    if (action.create) type = '💡 Création'
+                                    if (action.delete) type = '❌ Suppression'
+        
+                                    activities.push({
+                                        type: type,
+                                        name: file.data.name,
+                                        link: file.data.webViewLink,
+                                        time: getTimeInfo(activity)
+                                    })
+                                }
+                            })
+                        }
+        
+                        resolve(activities)
                     })
-                })
-    
-                await Project.updateOne({ _id: project._id }, {
-                    lastModifications: new Date()
-                })
-    
-                embed.sendTo(channel)
+                }))
+        
+                activities = [].concat.apply([], activities).sort((a, b) => new Date(b.date) - new Date(a.date))
+        
+                if (activities.length > 0) {
+                    activities.forEach((activity, i) => {
+                        embed.addField(activity.name + i, {
+                            title: `${moment(activity.time).format('H:mm (Do MMMM YYYY)')}`,
+                            description: `${activity.type} du fichier [${activity.name}](${activity.link}).`
+                        })
+                    })
+
+                    embed.sendTo(channel)
+                }
+
+                resolve(true)
+            } else {
+                resolve(false)
             }
-        }
+        })
     }
 
     async createProject (message) {
