@@ -44,6 +44,10 @@ module.exports = class Quokka {
         this.$props.rootFolder = results.data.files[0].id
         this.$state.projects = await Project.find()
 
+        await Project.updateMany({}, {
+            lastModifications: new Date()
+        })
+
         this.initEvents()
     }
 
@@ -203,7 +207,8 @@ module.exports = class Quokka {
                 project = await Project.create({
                     name,
                     channelId: message.channel.id,
-                    folderId: folder.id
+                    folderId: folder.id,
+                    lastModifications: new Date()
                 })
 
                 this.displayInfo(message)
