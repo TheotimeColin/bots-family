@@ -269,10 +269,8 @@ module.exports = class Quokka {
                 output: process.stdout,
             })
 
-            rl.question('Enter the code from that page here: ', (code) => {
-                rl.close();
-
-                this.$state.oAuth2Client.getToken(code, async (err, token) => {
+            if (process.env.GOOGLE_SUCCESS) {
+                this.$state.oAuth2Client.getToken(process.env.GOOGLE_SUCCESS, async (err, token) => {
                     if (err) return console.error('Error retrieving access token', err);
                     this.$state.oAuth2Client.setCredentials(token);
 
@@ -283,7 +281,7 @@ module.exports = class Quokka {
                     
                     resolve(true)
                 })
-            })
+            }
         })
     }
 }
