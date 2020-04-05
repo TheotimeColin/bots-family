@@ -106,7 +106,7 @@ module.exports = class Quokka {
                         const activitiesResults = await this.$props.driveActivity.activity.query({
                             itemName: `items/${result.id}`,
                             filter: force ? `` : `time > "${moment(project.lastModifications).format()}"`,
-                            pageSize: 3
+                            pageSize: 1
                         })
 
                         const getTimeInfo = function (activity) {
