@@ -241,26 +241,21 @@ module.exports = class Quokka {
     }
 
     authenticate () {
-        return new Promise (resolve => {
-            fs.readFile('credentials.json', async (err, content) => {
-                const credentials = JSON.parse(content)
+        return new Promise (async resolve => {
+            const stored = await Credentials.findOne({ name: 'google-drive' })
+            this.$state.oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT);
+        
+            if (stored) {
+                await this.$state.oAuth2Client.setCredentials(JSON.parse(stored.content))
+            } else {
+                await this.createNewToken()
+            }
 
-                const { client_secret, client_id, redirect_uris } = credentials;
-                const stored = await Credentials.findOne({ name: 'google-drive' })
-                this.$state.oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-            
-                if (stored) {
-                    await this.$state.oAuth2Client.setCredentials(JSON.parse(stored.content))
-                } else {
-                    await this.createNewToken()
-                }
+            this.$props.drive = google.drive({ version: 'v3', auth: this.$state.oAuth2Client })
+            this.$props.driveActivity = google.driveactivity({version: 'v2', auth: this.$state.oAuth2Client })
+            this.$props.people = google.people('v1')
 
-                this.$props.drive = google.drive({ version: 'v3', auth: this.$state.oAuth2Client })
-                this.$props.driveActivity = google.driveactivity({version: 'v2', auth: this.$state.oAuth2Client })
-                this.$props.people = google.people('v1')
-
-                resolve(true)
-            })
+            resolve(true)
         })
     }
 
