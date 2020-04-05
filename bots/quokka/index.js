@@ -44,10 +44,6 @@ module.exports = class Quokka {
         this.$props.rootFolder = results.data.files[0].id
         this.$state.projects = await Project.find()
 
-        await Project.updateMany({}, {
-            lastModifications: new Date()
-        })
-
         this.initEvents()
     }
 
