@@ -32,7 +32,7 @@ module.exports = class Quokka {
     }
 
     async init () {
-        this.$props.server = this.$props.client.guilds.cache.find(server => server.name === process.env.SERVER)
+        this.$props.server = this.$props.client.guilds.cache.find(server => server.name === process.env.SERVER_ASSO)
         
         await this.authenticate()
         console.log(`Logged in as ${this.$props.client.user.tag}!`)
@@ -59,7 +59,7 @@ module.exports = class Quokka {
             this.$state.projects.forEach(project => {
                 this.getReport(project.name)
             })
-        }, 3600)
+        }, 3600000)
     }
 
     onMessage (message) {
