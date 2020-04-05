@@ -59,9 +59,9 @@ module.exports = class Quokka {
             this.$state.projects.forEach(async p => {
                 let project = await Project.findOne({ name: p.name })
 
-                var diff = moment().diff(moment(project.lastModifications), 'seconds')
+                var diff = moment().diff(moment(project.lastModifications), 'hours')
 
-                if (diff > 50) {
+                if (diff >= 1) {
                     await this.getReport(project)
 
                     await Project.updateOne({ _id: project._id }, {
