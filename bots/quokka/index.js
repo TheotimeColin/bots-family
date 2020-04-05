@@ -59,7 +59,7 @@ module.exports = class Quokka {
             this.$state.projects.forEach(project => {
                 this.getReport(project.name)
             })
-        }, 3600000)
+        }, 3600)
     }
 
     onMessage (message) {
@@ -261,13 +261,15 @@ module.exports = class Quokka {
 
     createNewToken () {
         return new Promise (resolve => {
-            const authUrl = this.$state.oAuth2Client.generateAuthUrl({ access_type: 'offline', scope: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.activity', 'https://www.googleapis.com/auth/contacts'] });
-            console.log('Authorize this app by visiting this url:', authUrl);
-            
-            const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout,
-            })
+            if (!process.env.GOOGLE_SUCCESS) {
+                const authUrl = this.$state.oAuth2Client.generateAuthUrl({ access_type: 'offline', scope: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.activity', 'https://www.googleapis.com/auth/contacts'] });
+                console.log('Authorize this app by visiting this url:', authUrl);
+                
+                const rl = readline.createInterface({
+                    input: process.stdin,
+                    output: process.stdout,
+                })
+            }
 
             if (process.env.GOOGLE_SUCCESS) {
                 this.$state.oAuth2Client.getToken(process.env.GOOGLE_SUCCESS, async (err, token) => {
