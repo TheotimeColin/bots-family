@@ -315,7 +315,7 @@ const questions = [
             }
         ]
     }, {
-        title: "Quel balade te tente le plus ?",
+        title: "Quelle balade te tente le plus ?",
         value: 1,
         options: [
             {

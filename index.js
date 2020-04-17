@@ -7,20 +7,25 @@ const Capybara = require('./bots/capybara')
 const Pangolin = require('./bots/pangolin')
 const Bard = require('./bots/bard')
 const Quokka = require('./bots/quokka')
+const Panda = require('./bots/panda')
 //const Wendigo = require('./bots/wendigo')
 //const Ellieth = require('./bots/ellieth')
 //const Bridgette = require('./bots/bridgette')
 
 moment.locale('fr')
 
-mongoose.connect(process.env.MONGO);
+mongoose.connect(process.env.MONGO, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', () => {
-    const capybaraBot = new Capybara()
-    const pangolinBot = new Pangolin()
-    const bardBot = new Bard()
-    const quokkaBot = new Quokka()
+    // const capybaraBot = new Capybara()
+    // const pangolinBot = new Pangolin()
+    // const bardBot = new Bard()
+    // const quokkaBot = new Quokka()
+    const pandaBot = new Panda()
     //const wendigoBot = new Wendigo()
     //const elliethBot = new Ellieth()
     //const bridgetteBot = new Bridgette()

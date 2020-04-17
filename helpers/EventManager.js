@@ -9,6 +9,14 @@ module.exports = class EventManager {
         target.on(event, action)
     }
 
+    addReactionListener({ id, target, action }) {
+        let event = 'collect'
+        target = target.createReactionCollector(v => v, { time: 99999999 })
+
+        this.$listeners[id] = { event, target, action }
+        target.on(event, action)    
+    }
+
     removeListener(id) {
         let listener = this.$listeners[id]
         listener.target.removeListener(listener.event, listener.action),
