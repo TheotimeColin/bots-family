@@ -21,10 +21,10 @@ mongoose.connect(process.env.MONGO, {
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', () => {
-    // const capybaraBot = new Capybara()
-    // const pangolinBot = new Pangolin()
-    // const bardBot = new Bard()
-    // const quokkaBot = new Quokka()
+    const capybaraBot = new Capybara()
+    const pangolinBot = new Pangolin()
+    const bardBot = new Bard()
+    const quokkaBot = new Quokka()
     const pandaBot = new Panda()
     //const wendigoBot = new Wendigo()
     //const elliethBot = new Ellieth()
