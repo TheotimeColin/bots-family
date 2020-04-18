@@ -292,35 +292,60 @@ class Haiku {
             channel: this.$props.message.channel
         })
 
-        this.onRecap(answer)
+        this.onSign(answer)
     }
 
-    onRecap (message) {
+    async onSign (message) {
+        let embed = new EmbedManager({
+            title: 'Souhaites-tu signer ton écrit ? Si tu veux rester anonyme, clique sur 👁'
+        })
+
+        let author = await this.$managers.message.awaitAnswerOrReactionsTo({ embed: embed.getEmbed() } , {
+            from: this.$props.message.author.id,
+            client: this.$props.client,
+            channel: this.$props.message.channel,
+            reactions: [
+                { emoji: '👁', action: () => this.onRecap(message) },
+                { emoji: '🛑', action: () => this.reset() }
+            ]
+        })
+
+        if (author) this.onRecap(message, author)
+    }
+
+    onRecap (message, author) {
+        let userMessage = {
+            fields: {
+                content: { description: `*${message}*` },
+                author: { title: author ? '⎯ ' + author : '⎯ anonyme' }
+            }
+        }
+
         let embed = new EmbedManager({
             description: `Qu'en penses-tu ? Puis-je le partager aux autres ? C'est anonyme.`,
-            fields: {
-                content: { description: `*${message}*` }
-            }
+            ...userMessage
         })
 
         this.$managers.message.getReactionsTo({ embed: embed.getEmbed() } , {
             client: this.$props.client,
             channel: this.$props.message.channel,
             reactions: [
-                { emoji: '✅', action: () => this.onConfirm(`*${message}*`) },
+                { emoji: '✅', action: () => this.onConfirm(userMessage) },
                 { emoji: '🛑', action: () => this.reset() }
             ]
         })
     }
 
-    async onConfirm (message) {
+    async onConfirm (embed) {
         let channel = searchOne(this.$props.conf.channels, { name: 'haiku' }, 'entity')
-        let result = await channel.send({ embed: { description: message } })
+
+        embed = new EmbedManager(embed)
+        let result = await channel.send({ embed: embed.getEmbed() })
 
         await result.react('❤️')
 
-        let embed = new EmbedManager(trans.haiku.confirmed)
-        this.$props.message.channel.send({ embed: embed.getEmbed() })
+        let confirmed = new EmbedManager(trans.haiku.confirmed)
+        this.$props.message.channel.send({ embed: confirmed.getEmbed() })
     }
 
     onHelp () {
@@ -451,7 +476,7 @@ class Support {
                     description: `*${message}*`
                 },
                 author: {
-                    title: author ? '\u200B\u200B\u200B⎯ ' + author : '\u200B\u200B\u200B⎯ anonyme'
+                    title: author ? '⎯ ' + author : '⎯ anonyme'
                 }
             }
         }
