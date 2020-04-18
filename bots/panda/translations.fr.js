@@ -7,6 +7,7 @@ module.exports = {
     setup: {
         whatChannelWelcome: `J'ai seulement quelques questions à te poser pour démarrer. Sur quel channel souhaiter la bienvenue ?`,
         whatChannelHaiku: `Quel channel pour la publication des haikus ?`,
+        whatChannelSupport: `Quel channel pour la publication des bouteilles ?`,
         whatRoleParticipate: `Quel rôle assigner aux participants de l'événement ?`,
         done: `C'est tout pour moi ! Tu peux commencer à utiliser mes commandes.`,
         alreadyDone: `je suis déjà configuré !`
@@ -19,7 +20,7 @@ module.exports = {
     },
     welcome: {
         title: `🎋 Bienvenue à toi !`,
-        description: `Cet après-midi est dédié du bien-être et au développement personnel. Certains ateliers proposent de publier des messages en étant anonyme.\n\n**Je te prierai de le prendre au sérieux autant que possible**.\n\nEn cas d'abus, ils pourront être annulés, et ce serait bien dommage. Je te remercie 💕`,
+        description: `Cet après-midi est dédié du bien-être et au développement personnel. Certains ateliers proposent de publier des messages en étant anonyme.\n\n**Je te prierai de le prendre au sérieux autant que possible**.\n\nBe positive ! Je te remercie 💕`,
         accept: `Si cette règle te convient, cliques sur le bouton ci-dessous :`
     },
     welcomePrivate: {
@@ -112,7 +113,7 @@ module.exports = {
     },
     support: {
         welcome: {
-            title: `🎐 Lâcher de lanternes & soutien`,
+            title: `🌊 Bouteilles à la mer`,
             description: `Tu t'apprêtes à écrire un petit message qui apportera très certainement de la chaleur dans le coeur d'un autre être humain. Sois positif avant tout !`,
             fields: {
                 tutorial: {

@@ -147,6 +147,20 @@ module.exports = class Panda {
                     id: hChannel.id, name: 'haiku', type: 'channel', botId, guildId
                 })
 
+                /* SUPPORT CHANNEL */
+                
+                searchChannelId = await this.$managers.message.awaitAnswerTo(trans.setup.whatChannelSupport, {
+                    client: this.$props.client,
+                    channel: message.channel,
+                    from: message.author.id
+                })
+
+                const sChannel = message.guild.channels.cache.get(searchChannelId.replace(/\D+/g, ''))
+                const sChannelExists = await DiscordEntity.findOne({ id: sChannel.id, guildId })
+                const sChannelEntity = sChannelExists ? hChannelExists : await DiscordEntity.create({
+                    id: sChannel.id, name: 'support', type: 'channel', botId, guildId
+                })
+
                 /* PARTICIPANT ROLE */
 
                 let searchRoleId = await this.$managers.message.awaitAnswerTo(trans.setup.whatRoleParticipate, {
@@ -163,7 +177,7 @@ module.exports = class Panda {
                 })
                 
                 await BotConf.create({
-                    channels: [ channelEntity._id, hChannelEntity._id ],
+                    channels: [ channelEntity._id, hChannelEntity._id, sChannelEntity._id ],
                     roles: [ roleEntity._id ],
                     botId, guildId, 
                 })
@@ -414,7 +428,7 @@ class Support {
         let userMessage = {
             fields: {
                 user: {
-                    title: question,
+                    title: question ? question : 'Bouteille à la mer :',
                     description: `*${message}*`
                 }
             }
@@ -436,7 +450,8 @@ class Support {
     }
 
     async onConfirm (embed) {
-        let channel = searchOne(this.$props.conf.channels, { name: 'haiku' }, 'entity')
+        let channel = searchOne(this.$props.conf.channels, { name: 'support' }, 'entity')
+
         embed = new EmbedManager(embed)
         let result = await channel.send({ embed: embed.getEmbed() })
 
