@@ -20,7 +20,14 @@ module.exports = class EventManager {
     removeListener(id) {
         let listener = this.$listeners[id]
         listener.target.removeListener(listener.event, listener.action),
-        this.$listeners[id] = null
+        delete this.$listeners[id]
+    }
+
+    reset () {
+        Object.keys(this.$listeners).forEach(key => {
+            console.log(key)
+            this.removeListener(key)
+        })
     }
 
 }

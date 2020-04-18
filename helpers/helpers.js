@@ -31,6 +31,10 @@ const searchOne = function (where, query, key) {
     }
 }
 
+const random = function (min = 0, max = 1) {
+    return Math.floor(Math.random() * max) + min
+}
+
 module.exports = {
-    getId, searchOne
+    getId, searchOne, random
 }

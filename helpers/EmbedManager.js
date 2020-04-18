@@ -1,7 +1,14 @@
 module.exports = class EmbedManager {
 
-    constructor ({ color, title, description, thumbnail }) {
+    constructor ({ color, title, description, thumbnail, fields = {} }) {
         this.$props = {}
+
+        Object.keys(fields).forEach(id => {
+            fields[id] = {
+                enabled: fields[id].enabled === false ? false : true,
+                ...fields[id]
+            }
+        })
 
         this.$state = {
             message: null,
@@ -9,7 +16,7 @@ module.exports = class EmbedManager {
             title,
             description,
             thumbnail,
-            fields: {}
+            fields: fields
         }
     }
 
@@ -82,7 +89,7 @@ module.exports = class EmbedManager {
 
     getEmbed () {
         let fields = Object.keys(this.$state.fields).filter(id => this.$state.fields[id].enabled)
-
+        console.log(fields)
         return {
             color: this.$state.color,
             title: this.$state.title,
@@ -97,6 +104,8 @@ module.exports = class EmbedManager {
             channel.send({ embed: this.getEmbed() }).then(message => {
                 this.$state.message = message
                 resolve(message)
+
+                return message
             })
         })
     }

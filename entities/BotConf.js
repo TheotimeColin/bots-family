@@ -9,7 +9,11 @@ const BotConfSchema = new mongoose.Schema({
   },
   channels: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'NamedChannel'
+    ref: 'DiscordEntity'
+  }],
+  roles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'DiscordEntity'
   }]
 })
 

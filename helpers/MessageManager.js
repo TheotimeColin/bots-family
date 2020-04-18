@@ -21,7 +21,7 @@ module.exports = class MessageManager {
                 event: 'message',
                 target: client,
                 action: (message) => {
-                    if (message.author.id == from) {
+                    if (message.author.id == from && message.channel.id == channel.id) {
                         this.$managers.event.removeListener(id)
                         resolve(message.content)
                     }
@@ -30,9 +30,15 @@ module.exports = class MessageManager {
         })
     }
 
-    async getReactionsTo (text, { client, channel, reactions }) {
+    async getReactionsTo (text, { channel, reactions, type }) {
         const id = getId()
-        const sent = await channel.send(text)
+        let sent = null
+
+        if (type == 'embed') {
+            sent = await text.sendTo(channel)
+        } else {
+            sent = await channel.send(text)
+        }
 
         reactions.forEach(reaction => {
             sent.react(reaction.emoji)
@@ -43,11 +49,62 @@ module.exports = class MessageManager {
             target: sent,
             action: (receivedReaction, user) => {
                 if (user.id !== sent.author.id) {
+                    this.$managers.event.removeListener(id)
+                    
                     reactions.forEach(reaction => {
-                        if (receivedReaction.emoji.name === reaction.emoji) reaction.action()
+                        if (receivedReaction.emoji.name === reaction.emoji) reaction.action(user)
                     })
                 }
             }
         })
+    }
+
+    awaitAnswerOrReactionsTo (text, { client, channel, from, reactions, type }) {
+        return new Promise(async resolve => {
+            const id = getId()
+            let sent = null
+
+            if (type == 'embed') {
+                sent = await text.sendTo(channel)
+            } else {
+                sent = await channel.send(text)
+            }
+
+            reactions.forEach(reaction => {
+                sent.react(reaction.emoji)
+            })
+    
+            this.$managers.event.addReactionListener({
+                id: id,
+                target: sent,
+                action: (receivedReaction, user) => {
+                    if (user.id !== sent.author.id) {
+                        this.$managers.event.removeListener(id)
+                        
+                        reactions.forEach(reaction => {
+                            if (receivedReaction.emoji.name === reaction.emoji) reaction.action(user)
+                        })
+
+                        resolve(false)
+                    }
+                }
+            })
+
+            this.$managers.event.addListener({
+                id: id,
+                event: 'message',
+                target: client,
+                action: (message) => {
+                    if (message.author.id == from && message.channel.id == channel.id) {
+                        this.$managers.event.removeListener(id)
+                        resolve(message.content)
+                    }
+                }
+            })
+        })
+    }
+
+    reset () {
+        this.$managers.event.reset()
     }
 }
