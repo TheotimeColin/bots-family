@@ -225,6 +225,7 @@ module.exports = class Panda {
             this.$managers.message.getReactionsTo({ embed: embed.getEmbed() } , {
                 client: this.$props.client,
                 channel: searchOne(this.$props.conf.channels, { name: 'welcome' }, 'entity'),
+                infinite: true,
                 reactions: [
                     { emoji: '✅', action: async (user) => {
                         let role = searchOne(this.$props.conf.roles, { name: 'participant' }, 'entity')
@@ -395,7 +396,7 @@ class Support {
         })
 
         if (answer && answer.length >= 20) {
-            this.onRecap(question, answer)
+            this.onSign(question, answer)
         } else if (answer) {
             this.onQuestionMessage(question, true)
         }        
@@ -418,18 +419,39 @@ class Support {
         })
         
         if (answer && answer.length >= 20) {
-            this.onRecap(false, answer)
+            this.onSign(false, answer)
         } else if (answer) {
             this.onFreeMessage(true)
         }
     }
 
-    onRecap (question = false, message) {
+    async onSign (question, message) {
+        let embed = new EmbedManager({
+            title: 'Souhaites-tu signer ton écrit ? Si tu veux rester anonyme, cliques sur 👁'
+        })
+
+        let author = await this.$managers.message.awaitAnswerOrReactionsTo({ embed: embed.getEmbed() } , {
+            from: this.$props.message.author.id,
+            client: this.$props.client,
+            channel: this.$props.message.channel,
+            reactions: [
+                { emoji: '👁', action: () => this.onRecap(question, message, false) },
+                { emoji: '🛑', action: () => this.reset() }
+            ]
+        })
+
+        if (author) this.onRecap(question, message, author)
+    }
+
+    onRecap (question = false, message, author = false) {
         let userMessage = {
             fields: {
                 user: {
                     title: question ? question : 'Bouteille à la mer :',
                     description: `*${message}*`
+                },
+                author: {
+                    title: author ? '\u200B\u200B\u200B⎯ ' + author : '\u200B\u200B\u200B⎯ anonyme'
                 }
             }
         }

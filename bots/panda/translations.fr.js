@@ -28,7 +28,7 @@ module.exports = {
         description: `Sens-toi libre d'aller et venir comme bon te semble, tu n'es pas obligé de participer à tout !`,
         program: {
             free: {
-                description: `Pendant tout l'après-midi :`
+                description: `Tout l'après-midi :`
             },
             haikus: {
                 title: `🖌 Écriture de haikus & poèmes`,
@@ -51,7 +51,7 @@ module.exports = {
             },
             slot5: {
                 title: `💪 16h00 : **Devenir maître de sa propre vie @Evann**`,
-                description: `Comment se prendre en main et vivre avec le vrai soi ?`
+                description: `Soyez l'acteur principal de votre film, autorisez vous à vivre !`
             },
             slot6: {
                 title: `🪔 16h30 : **Séance de méditation @Apolline**`,
@@ -139,7 +139,10 @@ module.exports = {
             `Que dirais-tu à une amie qui se sent seul ?`,
             `Que dirais-tu à un ami qui ne trouve pas de travail ?`,
             `Que dirais-tu à une amie qui vient d'être humiliée ?`,
-            `Que dirais-tu à un ami qui vient de subir une rupture douloureuse ?`
+            `Que dirais-tu à un ami qui vient de subir une rupture douloureuse ?`,
+            `Que dirais-tu à une amie qui se sent perdue dans sa vie ?`,
+            `Que dirais-tu à un ami qui se trouve moche ?`,
+            `Que dirais-tu à une amie qui s'ennuie terriblement ?`
         ]
     }
 }

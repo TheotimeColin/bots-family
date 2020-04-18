@@ -30,7 +30,7 @@ module.exports = class MessageManager {
         })
     }
 
-    async getReactionsTo (text, { channel, reactions, type }) {
+    async getReactionsTo (text, { channel, reactions, type, infinite = false }) {
         const id = getId()
         let sent = null
 
@@ -49,7 +49,7 @@ module.exports = class MessageManager {
             target: sent,
             action: (receivedReaction, user) => {
                 if (user.id !== sent.author.id) {
-                    this.$managers.event.removeListener(id)
+                    if (!infinite) this.$managers.event.removeListener(id)
                     
                     reactions.forEach(reaction => {
                         if (receivedReaction.emoji.name === reaction.emoji) reaction.action(user)

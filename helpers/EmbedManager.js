@@ -89,7 +89,7 @@ module.exports = class EmbedManager {
 
     getEmbed () {
         let fields = Object.keys(this.$state.fields).filter(id => this.$state.fields[id].enabled)
-        console.log(fields)
+
         return {
             color: this.$state.color,
             title: this.$state.title,
