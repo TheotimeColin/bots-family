@@ -59,7 +59,11 @@ module.exports = {
             },
             slot7: {
                 title: `🧘‍♂️ 17h30 : **Séance d'initiation au yoga vinyasa @Corentin**`,
-                description: `Découverte guidée de la pratique du yoga.`
+                description: `Initiation au yoga vinyasa, une forme de yoga qui permet de développer sa force physique et psychique.`
+            },
+            slot8: {
+                title: `☀️ 18h15 : **Se libérer des pensées négatives @Alexandre**`,
+                description: `Gérer ses pensées négatives avec la thérapie cognitivo-comportementale.`
             }
         }
     },
@@ -123,7 +127,7 @@ module.exports = {
         },
         free: `Que souhaites-tu dire au monde entier ?`,
         elaborate: `Peux-tu élaborer un peu ta réponse ? Imagines que tu t'adresse à quelqu'un en face de toi 🤗`,
-        share: `Qu'en penses-tu ? Puis-je le partager aux autres ? C'est anonyme.`,
+        share: `Qu'en penses-tu ? Puis-je le partager aux autres ?`,
         confirmed: {
             description: `Ton message a bien été partagé. N'hésite pas à en faire d'autres, the world needs you right now 💕`
         },

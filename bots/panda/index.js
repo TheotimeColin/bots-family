@@ -427,7 +427,7 @@ class Support {
 
     async onSign (question, message) {
         let embed = new EmbedManager({
-            title: 'Souhaites-tu signer ton écrit ? Si tu veux rester anonyme, cliques sur 👁'
+            title: 'Souhaites-tu signer ton écrit ? Si tu veux rester anonyme, clique sur 👁'
         })
 
         let author = await this.$managers.message.awaitAnswerOrReactionsTo({ embed: embed.getEmbed() } , {
