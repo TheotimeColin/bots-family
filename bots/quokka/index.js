@@ -44,25 +44,27 @@ module.exports = class Quokka {
         this.$props.rootFolder = results.data.files[0].id
         this.$state.projects = await Project.find()
 
-        this.$props.client.on('messageReactionAdd', async (reaction) => {
+        this.$props.client.on('messageReactionAdd', async (reaction, user) => {
             const isHelperMessage = await this.checkHelperMessage(reaction)
             if (!isHelperMessage) return
 
             const role = reaction.message.guild.roles.cache.find(role => role.name.includes(reaction.emoji.name))
+            const member = reaction.message.guild.members.cache.get(user.id)
 
-            if (role) {
-                reaction.message.member.roles.add(role.id)
+            if (role && member) {
+                member.roles.add(role.id)
             }
         })
 
-        this.$props.client.on('messageReactionRemove', async (reaction) => {
+        this.$props.client.on('messageReactionRemove', async (reaction, user) => {
             const isHelperMessage = await this.checkHelperMessage(reaction)
             if (!isHelperMessage) return
 
             const role = reaction.message.guild.roles.cache.find(role => role.name.includes(reaction.emoji.name))
+            const member = reaction.message.guild.members.cache.get(user.id)
 
-            if (role) {
-                reaction.message.member.roles.remove(role.id)
+            if (role && member) {
+                member.roles.remove(role.id)
             }
         })
 
