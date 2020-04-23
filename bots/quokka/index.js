@@ -107,7 +107,7 @@ module.exports = class Quokka {
                 }
             }
 
-            if (reaction.message.content.includes('Comment devenir Helper ?') || reaction.message.content.includes('choisir des compétences')) {
+            if (reaction.message.content.includes('Comment devenir Helper ?') || reaction.message.content.includes('sélectionner les domaines qui')) {
                 resolve(true)
             } else {
                 resolve(false)
