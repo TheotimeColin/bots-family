@@ -66,7 +66,7 @@ module.exports = class Quokka {
             }
         })
 
-        // this.initEvents()
+        this.initEvents()
     }
 
     initEvents () {
