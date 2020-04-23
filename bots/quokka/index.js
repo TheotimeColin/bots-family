@@ -3,7 +3,7 @@ const { google } = require('googleapis')
 const fs = require('fs')
 const readline = require('readline');
 const moment = require('moment')
-const client = new Discord.Client()
+const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] })
 
 const Credentials = require('../../entities/Credentials')
 const Project = require('../../entities/Project')
@@ -34,17 +34,39 @@ module.exports = class Quokka {
     async init () {
         this.$props.server = this.$props.client.guilds.cache.find(server => server.name === process.env.SERVER_ASSO)
         
-        await this.authenticate()
+        // await this.authenticate()
         console.log(`Logged in as ${this.$props.client.user.tag}!`)
         
-        const results = await this.$props.drive.files.list({
-            q: `mimeType="application/vnd.google-apps.folder" and name="antiswipe"`
+        // const results = await this.$props.drive.files.list({
+        //     q: `mimeType="application/vnd.google-apps.folder" and name="antiswipe"`
+        // })
+
+        // this.$props.rootFolder = results.data.files[0].id
+        // this.$state.projects = await Project.find()
+
+        this.$props.client.on('messageReactionAdd', async (reaction) => {
+            const isHelperMessage = await this.checkHelperMessage(reaction)
+            if (!isHelperMessage) return
+
+            const role = reaction.message.guild.roles.cache.find(role => role.name.includes(reaction.emoji.name))
+
+            if (role) {
+                reaction.message.member.roles.add(role.id)
+            }
         })
 
-        this.$props.rootFolder = results.data.files[0].id
-        this.$state.projects = await Project.find()
+        this.$props.client.on('messageReactionRemove', async (reaction) => {
+            const isHelperMessage = await this.checkHelperMessage(reaction)
+            if (!isHelperMessage) return
 
-        this.initEvents()
+            const role = reaction.message.guild.roles.cache.find(role => role.name.includes(reaction.emoji.name))
+
+            if (role) {
+                reaction.message.member.roles.remove(role.id)
+            }
+        })
+
+        // this.initEvents()
     }
 
     initEvents () {
@@ -70,6 +92,27 @@ module.exports = class Quokka {
                 }
             })
         }, 1800000)
+    }
+
+    checkHelperMessage (reaction) {
+        return new Promise(async resolve => {
+            if (reaction.partial) {
+
+                try {
+                    await reaction.fetch();
+                } catch (error) {
+                    console.log('Something went wrong when fetching the message: ', error)
+                    resolve(false)
+                    return
+                }
+            }
+
+            if (reaction.message.content.includes('Comment devenir Helper ?') || reaction.message.content.includes('choisir des compétences')) {
+                resolve(true)
+            } else {
+                resolve(false)
+            }
+        })
     }
 
     async onMessage (message) {
