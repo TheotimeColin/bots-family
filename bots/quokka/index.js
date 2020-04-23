@@ -34,15 +34,15 @@ module.exports = class Quokka {
     async init () {
         this.$props.server = this.$props.client.guilds.cache.find(server => server.name === process.env.SERVER_ASSO)
         
-        // await this.authenticate()
+        await this.authenticate()
         console.log(`Logged in as ${this.$props.client.user.tag}!`)
         
-        // const results = await this.$props.drive.files.list({
-        //     q: `mimeType="application/vnd.google-apps.folder" and name="antiswipe"`
-        // })
+        const results = await this.$props.drive.files.list({
+            q: `mimeType="application/vnd.google-apps.folder" and name="antiswipe"`
+        })
 
-        // this.$props.rootFolder = results.data.files[0].id
-        // this.$state.projects = await Project.find()
+        this.$props.rootFolder = results.data.files[0].id
+        this.$state.projects = await Project.find()
 
         this.$props.client.on('messageReactionAdd', async (reaction) => {
             const isHelperMessage = await this.checkHelperMessage(reaction)
