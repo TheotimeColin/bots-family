@@ -6,9 +6,10 @@ module.exports = {
     },
     setup: {
         whatChannelWelcome: `J'ai seulement quelques questions à te poser pour démarrer. Sur quel channel souhaiter la bienvenue ?`,
-        whatChannelHaiku: `Quel channel pour la publication des haikus ?`,
+        whatChannelHaiku: `Quel channel pour la publication des bavards ?`,
         whatChannelSupport: `Quel channel pour la publication des bouteilles ?`,
         whatRoleParticipate: `Quel rôle assigner aux participants de l'événement ?`,
+        whatRoleBavard: 'Quel rôle pour les bavards ?',
         done: `C'est tout pour moi ! Tu peux commencer à utiliser mes commandes.`,
         alreadyDone: `je suis déjà configuré !`
     },
@@ -19,9 +20,14 @@ module.exports = {
         title: `Tu veux un cookie ?`
     },
     welcome: {
-        title: `🎋 Bienvenue à toi !`,
-        description: `Cet après-midi est dédié du bien-être et au développement personnel. Certains ateliers proposent de publier des messages en étant anonyme.\n\n**Je te prierai de le prendre au sérieux autant que possible**.\n\nBe positive ! Je te remercie 💕`,
-        accept: `Si cette règle te convient, cliques sur le bouton ci-dessous :`
+        title: `💕 Bienvenue sur le serveur antiswipe !`,
+        description: `**C'est ta première fois sur Discord ?**\nPas de panique, il y a un petit temps d'adaptation mais c'est très facile. Il y a simplement plusieurs "salons" où tu peux discuter avec d'autres membres, à l'écrit ou bien à l'oral.\n\n**Par où commencer ?**\nPour débloquer l'accès aux salons, il suffit de cliquer sur le bouton vert ci-dessous. Ensuite, tu pourras démarrer par le salon "#présentations" pour nous parler un peu de toi si tu le souhaites !\n\n**Je suis venu·e pour participer à un événement**\nTu devrais pouvoir voir un salon qui correspond à l'événement en cours. Parfois, tu dois aussi rejoindre un salon vocal pour que tu puisses entendre les animateurs mais **tu n'es pas obligé·e de parler**, le micro est désactivé par défaut.`,
+        accept: `Pour débloquer l'accès aux salons, cliques sur le bouton ci-dessous :`
+    },
+    bavards: {
+        title: `💬 Envie de plus de bla bla ?`,
+        description: `Tu peux débloquer l'accès à d'autres salons de discussion si tu as envie d'interagir encore plus avec les autres membres de la communauté ! On y parle photographie, cuisine mais aussi musique, jeux-vidéos... Et c'est aussi un lieu d'entraide, de convivialité et de sorties improvisées ! `,
+        accept: `Si ça te parle, il suffit de cliquer sur le perroquet ci-dessous !`
     },
     welcomePrivate: {
         title: `💌 Voici le programme !`,

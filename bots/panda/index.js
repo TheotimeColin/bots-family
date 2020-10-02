@@ -53,7 +53,6 @@ module.exports = class Panda {
                     case 'reset': this.reset(message); break;
                     case 'init': this.initWelcome(message); break;
                     case 'haiku': new Haiku(message, this.$props); break;
-                    case 'soutien': new Support(message, this.$props); break;
                     default: message.reply(trans.errors.notFound)
                 }
             }
@@ -147,20 +146,6 @@ module.exports = class Panda {
                     id: hChannel.id, name: 'haiku', type: 'channel', botId, guildId
                 })
 
-                /* SUPPORT CHANNEL */
-                
-                searchChannelId = await this.$managers.message.awaitAnswerTo(trans.setup.whatChannelSupport, {
-                    client: this.$props.client,
-                    channel: message.channel,
-                    from: message.author.id
-                })
-
-                const sChannel = message.guild.channels.cache.get(searchChannelId.replace(/\D+/g, ''))
-                const sChannelExists = await DiscordEntity.findOne({ id: sChannel.id, guildId })
-                const sChannelEntity = sChannelExists ? hChannelExists : await DiscordEntity.create({
-                    id: sChannel.id, name: 'support', type: 'channel', botId, guildId
-                })
-
                 /* PARTICIPANT ROLE */
 
                 let searchRoleId = await this.$managers.message.awaitAnswerTo(trans.setup.whatRoleParticipate, {
@@ -175,10 +160,23 @@ module.exports = class Panda {
                 const roleEntity = roleExists ? roleExists : await DiscordEntity.create({
                     id: role.id, name: 'participant', type: 'role', botId, guildId
                 })
+
+                let searchRoleIdB = await this.$managers.message.awaitAnswerTo(trans.setup.whatRoleBavard, {
+                    client: this.$props.client,
+                    channel: message.channel,
+                    from: message.author.id
+                })
+
+                searchRoleIdB = searchRoleIdB.replace(/\D+/g, '')
+                const roleB = message.guild.roles.cache.get(searchRoleIdB)
+                const roleExistsB = await DiscordEntity.findOne({ id: roleB.id, guildId })
+                const roleEntityB = roleExistsB ? roleExistsB : await DiscordEntity.create({
+                    id: roleB.id, name: 'bavard', type: 'role', botId, guildId
+                })
                 
                 await BotConf.create({
-                    channels: [ channelEntity._id, hChannelEntity._id, sChannelEntity._id ],
-                    roles: [ roleEntity._id ],
+                    channels: [ channelEntity._id, hChannelEntity._id ],
+                    roles: [ roleEntity._id, roleEntityB._id ],
                     botId, guildId, 
                 })
 
@@ -239,8 +237,40 @@ module.exports = class Panda {
                                 fields: trans.welcomePrivate.program
                             })
 
-                            user.send({ embed: embed.getEmbed() })
+                            // user.send({ embed: embed.getEmbed() })
                         }, 3000)
+                    } }
+                ]
+            })
+
+            this.initBavard(message)
+        } catch (e) {
+            console.error(e)
+            message.channel.send(trans.errors.generic)
+        }
+    }
+
+    initBavard (message) {
+        try {
+            let embed = new EmbedManager({
+                title: trans.bavards.title,
+                description: trans.bavards.description,
+                fields: {
+                    footer: { description: trans.bavards.accept, enabled: true }
+                }
+            })
+
+            console.log(this.$props.conf.channels)
+
+            this.$managers.message.getReactionsTo({ embed: embed.getEmbed() } , {
+                client: this.$props.client,
+                channel: searchOne(this.$props.conf.channels, { name: 'haiku' }, 'entity'),
+                infinite: true,
+                reactions: [
+                    { emoji: '🦜', action: async (user) => {
+                        let role = searchOne(this.$props.conf.roles, { name: 'bavard' }, 'entity')
+                        user = await this.$props.conf.guild.members.cache.get(user.id)
+                        user.roles.add(role.id)
                     } }
                 ]
             })
